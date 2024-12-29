@@ -8,12 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @Data
 public class ClienteServiceImp implements IClienteSevice {
 
     private final ClienteRepository clienteRepository;
+    private final String uploadPath = "uploads/clientes"; // Ruta para guardar fotos
 
     // CRUD CLIENTE
     @Override
@@ -59,7 +66,7 @@ public class ClienteServiceImp implements IClienteSevice {
             cliente.setFoto(clienteDTO.getFoto());
         }
         ClienteEntity clienteActualizado = clienteRepository.save(cliente);
-        return null;
+        return mapearDTO(clienteActualizado);
     }
 
     @Override
@@ -67,6 +74,17 @@ public class ClienteServiceImp implements IClienteSevice {
     public void delete(Long id) {
         ClienteEntity cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        // Borrar la foto del sistema de archivos si existe
+        if (cliente.getFoto() != null) {
+            Path filePath = Paths.get(uploadPath).resolve(cliente.getFoto());
+            try {
+                Files.deleteIfExists(filePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Error al borrar la foto del cliente", e);
+            }
+        }
+
         clienteRepository.delete(cliente);
     }
 
@@ -75,6 +93,44 @@ public class ClienteServiceImp implements IClienteSevice {
     public Page<ClienteDTO> findByNombreContainingIgnoreCase(String nombre, Pageable pageable) {
         Page<ClienteEntity> clientes = clienteRepository.findByNombreContainingIgnoreCase(nombre, pageable);
         return clientes.map(this::mapearDTO);
+    }
+
+    // Guardar foto del cliente
+
+    @Override
+    @Transactional
+    public ClienteDTO savePhoto(Long id, MultipartFile file) {
+        ClienteEntity cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        try {
+            // Borrar la foto anterior si existe
+            if (cliente.getFoto() != null) {
+                Path oldFilePath = Paths.get(uploadPath).resolve(cliente.getFoto());
+                Files.deleteIfExists(oldFilePath);
+            }
+
+            // Crear el directorio si no existe
+            Path directory = Paths.get(uploadPath);
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            // Guardar la nueva foto
+            String fileName = id + "_" + file.getOriginalFilename();
+            Path filePath = directory.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath);
+
+            // Actualizar la entidad con la nueva ruta de la foto
+            cliente.setFoto(fileName);
+            ClienteEntity clienteActualizado = clienteRepository.save(cliente);
+
+            // Retornar el DTO actualizado
+            return mapearDTO(clienteActualizado);
+
+        } catch (IOException e) {
+            throw new RuntimeException("Error al guardar la foto", e);
+        }
     }
 
     // Convertir Entity a DTO
@@ -101,5 +157,4 @@ public class ClienteServiceImp implements IClienteSevice {
 
         return clienteEntity;
     }
-
 }

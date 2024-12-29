@@ -108,3 +108,12 @@ form input,
 form button {
   border-radius: 5px;
 }
+
+.cliente-image {
+  width: 150px; /* Ancho fijo */
+  height: 150px; /* Alto fijo */
+  object-fit: contain; /* Asegura que toda la imagen esté visible */
+  border-radius: 8px; /* Esquinas redondeadas */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+  background-color: #f8f9fa; /* Color de fondo por si la imagen no ocupa todo el espacio */
+}
