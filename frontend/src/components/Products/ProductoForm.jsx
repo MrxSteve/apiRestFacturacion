@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import ProductoService from '../../services/ProductoService';
+import { showSuccessAlert, showErrorAlert } from '../../utils/alerts';
+
 
 export const ProductoForm = () => {
     const {id} = useParams();
@@ -41,21 +43,27 @@ export const ProductoForm = () => {
         e.preventDefault();
         try {
             if (id) {
+                // Editar producto
                 await ProductoService.update(id, producto);
                 if (fotoFile) {
                     await ProductoService.uploadPhoto(id, fotoFile);
                 }
+                showSuccessAlert('Producto actualizado', 'El producto se ha actualizado correctamente.');
             } else {
+                // Crear producto
                 const response = await ProductoService.save(producto);
                 if (fotoFile) {
                     await ProductoService.uploadPhoto(response.data.id, fotoFile);
                 }
+                showSuccessAlert('Producto creado', 'El producto se ha creado correctamente.');
             }
-            navigate('/productos');
+            navigate('/productos'); // Redirige al listado
         } catch (error) {
+            showErrorAlert('Error al guardar', 'Ocurrió un error al intentar guardar el producto.');
             console.error('Error saving producto:', error);
         }
     };
+    
 
   return (
     <form onSubmit={handleSubmit} className="cliente-form container mt-4 p-4 shadow rounded">

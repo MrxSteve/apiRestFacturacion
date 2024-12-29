@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ClienteService from "../services/ClienteService";
 import Pagination from "./Pagination";
+import { showConfirmationAlert, showSuccessAlert, showErrorAlert } from '../utils/alerts';
 
 const ClienteList = () => {
   const navigate = useNavigate();
@@ -27,15 +28,22 @@ const ClienteList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este cliente?")) {
-      try {
-        await ClienteService.delete(id);
-        fetchClientes();
-      } catch (error) {
-        console.error("Error deleting cliente:", error);
+      const confirmed = await showConfirmationAlert(
+          '¿Estás seguro?',
+          'Esta acción no se puede deshacer y el Cliente será eliminado.'
+      );
+
+      if (confirmed) {
+          try {
+              await ClienteService.delete(id); // Llama al servicio para eliminar
+              showSuccessAlert('Cliente eliminado', 'El Cliente ha sido eliminado correctamente.');
+              fetchClientes(); // Actualiza la lista
+          } catch (error) {
+              showErrorAlert('Error al eliminar', 'Ocurrió un error al intentar eliminar el Cliente.');
+              console.error('Error deleting Cliente:', error);
+          }
       }
-    }
-  };
+  };  
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import ProductoService from '../../services/ProductoService';
 import Pagination from '../../components/Pagination';
+import { showConfirmationAlert, showSuccessAlert, showErrorAlert } from '../../utils/alerts';
 
 export const ProductoList = () => {
     const navigate = useNavigate();
@@ -27,15 +28,22 @@ export const ProductoList = () => {
     }; 
 
     const handleDelete = async (id) => {
-        if (window.confirm('¿Estás seguro de eliminar este producto?')) {
+        const confirmed = await showConfirmationAlert(
+            '¿Estás seguro?',
+            'Esta acción no se puede deshacer y el producto será eliminado.'
+        );
+    
+        if (confirmed) {
             try {
-                await ProductoService.delete(id);
-                fetchProductos();
+                await ProductoService.delete(id); // Llama al servicio para eliminar
+                showSuccessAlert('Producto eliminado', 'El producto ha sido eliminado correctamente.');
+                fetchProductos(); // Actualiza la lista
             } catch (error) {
+                showErrorAlert('Error al eliminar', 'Ocurrió un error al intentar eliminar el producto.');
                 console.error('Error deleting producto:', error);
             }
         }
-    };
+    };    
 
     const handleSearchChange = (e) => {
         setSearchTerm(e.target.value);

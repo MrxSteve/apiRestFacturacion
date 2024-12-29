@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ClienteService from "../services/ClienteService";
+import { showSuccessAlert, showErrorAlert } from '../utils/alerts';
 
 const ClienteForm = () => {
   const { id } = useParams(); // Obtiene el id de los parámetros de la URL
@@ -41,26 +42,29 @@ const ClienteForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (id) {
-        // Actualizar cliente
-        await ClienteService.update(id, cliente);
-        if (fotoFile) {
-          await ClienteService.uploadPhoto(id, fotoFile); // Subir la nueva foto
-        }
-      } else {
-        // Crear nuevo cliente
-        const response = await ClienteService.save(cliente);
-        if (fotoFile) {
-          await ClienteService.uploadPhoto(response.data.id, fotoFile); // Subir la foto asociada
-        }
+      e.preventDefault();
+      try {
+          if (id) {
+              // Editar Cliente
+              await ClienteService.update(id, cliente);
+              if (fotoFile) {
+                  await ClienteService.uploadPhoto(id, fotoFile);
+              }
+              showSuccessAlert('Cliente actualizado', 'El Cliente se ha actualizado correctamente.');
+          } else {
+              // Crear Cliente
+              const response = await ClienteService.save(cliente);
+              if (fotoFile) {
+                  await ClienteService.uploadPhoto(response.data.id, fotoFile);
+              }
+              showSuccessAlert( 'Cliente creado', 'El Cliente se ha creado correctamente.');
+          }
+          navigate('/'); // Redirige al listado
+      } catch (error) {
+          showErrorAlert('Error al guardar', 'Ocurrió un error al intentar guardar el Cliente.');
+          console.error('Error saving Cliente:', error);
       }
-      navigate("/"); // Redirige a la página principal
-    } catch (error) {
-      console.error("Error saving cliente:", error);
-    }
-  };
+    };
 
   return (
     <form onSubmit={handleSubmit} className="cliente-form container mt-4 p-4 shadow rounded">
