@@ -12,8 +12,10 @@ const App = () => {
       <Navbar />
       <div className="container mt-4">
         <Routes>
+        <Route path="/" element={<ClienteList />} />
           <Route path="/clientes" element={<ClienteList />} />
           <Route path="/clientes/formulario" element={<ClienteForm />} />
+          <Route path="/clientes/formulario/:id" element={<ClienteForm />} />
           <Route path="/clientes/:id" element={<ClienteDetail />} />
         </Routes>
       </div>
