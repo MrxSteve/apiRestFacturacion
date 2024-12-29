@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import ClienteService from "../services/ClienteService";
+import Pagination from "./Pagination";
 
 const ClienteList = () => {
   const navigate = useNavigate();
@@ -100,7 +101,9 @@ const ClienteList = () => {
                 <td>
                   <button
                     className="btn btn-warning btn-sm"
-                    onClick={() => navigate(`/clientes/formulario/${cliente.id}`)}
+                    onClick={() =>
+                      navigate(`/clientes/formulario/${cliente.id}`)
+                    }
                   >
                     Editar
                   </button>
@@ -133,27 +136,11 @@ const ClienteList = () => {
         </tbody>
       </table>
 
-      <div className="d-flex justify-content-between align-items-center">
-        <button
-          className="btn btn-secondary"
-          onClick={() => setPage(page - 1)}
-          disabled={page === 0}
-        >
-          Anterior
-        </button>
-
-        <span>
-          Página {page + 1} de {totalPages}
-        </span>
-
-        <button
-          className="btn btn-secondary"
-          onClick={() => setPage(page + 1)}
-          disabled={page + 1 === totalPages}
-        >
-          Siguiente
-        </button>
-      </div>
+      <Pagination
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
     </div>
   );
 };
