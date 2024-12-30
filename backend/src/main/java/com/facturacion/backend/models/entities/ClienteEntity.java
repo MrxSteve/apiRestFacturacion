@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "clientes")
@@ -33,4 +34,9 @@ public class ClienteEntity {
     private LocalDate createAt;
 
     private String foto;
+
+    @OneToMany(mappedBy = "cliente",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    private List<FacturaEntity> facturas;
 }
