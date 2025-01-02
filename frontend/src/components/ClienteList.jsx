@@ -50,6 +50,10 @@ const ClienteList = () => {
     setPage(0); // Reiniciar a la primera página cuando se realiza una búsqueda
   };
 
+  const handleCrearFactura = (clienteId) => {
+    navigate(`/clientes/${clienteId}/factura`);
+  };
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
@@ -127,7 +131,7 @@ const ClienteList = () => {
                 <td>
                   <button
                     className="btn btn-success btn-sm"
-                    onClick={() => navigate(`/facturas/crear/${cliente.id}`)}
+                    onClick={() => handleCrearFactura(cliente.id)}
                   >
                     Crear Factura
                   </button>

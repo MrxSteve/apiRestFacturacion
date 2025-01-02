@@ -8,6 +8,9 @@ import Footer from "./components/Footer";
 import { ProductoList } from "./components/Products/ProductoList";
 import { ProductoDetail } from "./components/Products/ProductoDetail";
 import { ProductoForm } from "./components/Products/ProductoForm";
+import { CrearFactura } from "./components/Facturas/CrearFactura";
+import { VerFactura } from "./components/Facturas/VerFactura";
+import { BuscarFacturasRango } from "./components/Facturas/BuscarFacturasRango";
 
 const App = () => {
   return (
@@ -28,6 +31,12 @@ const App = () => {
           <Route path="/productos/detalle/:id" element={<ProductoDetail />} />
           <Route path="/productos/formulario" element={<ProductoForm />}/>
           <Route path="/productos/formulario/:id" element={<ProductoForm />}/>
+
+          {/* Rutas de Factura */}
+          <Route path="/clientes/:clienteId/factura" element={<CrearFactura />} />
+          <Route path="/facturas/ver/:id" element={<VerFactura />} />
+          <Route path="/factura/rango" element={<BuscarFacturasRango />} />
+
         </Routes>
       </div>
       <Footer />

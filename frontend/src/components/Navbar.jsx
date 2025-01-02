@@ -32,7 +32,7 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li className="nav-item">
-              <NavLink className="nav-link" to="/facturas">
+              <NavLink className="nav-link" to="/factura/rango">
                 Facturas
               </NavLink>
             </li>
