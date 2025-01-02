@@ -6,11 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Data
-public class ProductoDTO {
+public class FacturaDTO {
     private Long id;
-    private String nombre;
-    private Double precio;
+    private String descripcion;
+    private String observacion;
     private LocalDate createAt;
-    private String foto;
-    private List<DetalleFacturaDTO> items;
+    private ClienteDTO cliente;
+    List<DetalleFacturaDTO> items;
 }

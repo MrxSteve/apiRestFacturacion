@@ -1,6 +1,8 @@
 package com.facturacion.backend.models.service;
 
+import com.facturacion.backend.models.dtos.DetalleFacturaDTO;
 import com.facturacion.backend.models.dtos.ProductoDTO;
+import com.facturacion.backend.models.entities.DetalleFacturaEntity;
 import com.facturacion.backend.models.entities.ProductoEntity;
 import com.facturacion.backend.models.repositories.ProductoRepository;
 import lombok.Data;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @Service
 @Data
@@ -137,9 +140,33 @@ public class ProductoServiceImp implements IProductoService {
         ProductoDTO productoDTO = new ProductoDTO();
         productoDTO.setId(productoEntity.getId());
         productoDTO.setNombre(productoEntity.getNombre());
-        productoDTO.setPrecio(productoEntity.getPrecio());
+        productoDTO.setPrecio(productoEntity.getPrecio() != null ? productoEntity.getPrecio() : 0.0); // Validación de precio
         productoDTO.setCreateAt(productoEntity.getCreateAt());
         productoDTO.setFoto(productoEntity.getFoto());
+
+        // Mapear la lista de DetalleFacturaEntity a DetalleFacturaDTO
+        if (productoEntity.getItems() != null) {
+            List<DetalleFacturaDTO> items = productoEntity.getItems().stream().map(detalle -> {
+                DetalleFacturaDTO detalleDTO = new DetalleFacturaDTO();
+                detalleDTO.setId(detalle.getId());
+                detalleDTO.setCantidad(detalle.getCantidad());
+
+                // Mapear producto en DetalleFacturaDTO
+                if (detalle.getProducto() != null) {
+                    ProductoDTO productoDetalleDTO = new ProductoDTO();
+                    productoDetalleDTO.setId(detalle.getProducto().getId());
+                    productoDetalleDTO.setNombre(detalle.getProducto().getNombre());
+                    productoDetalleDTO.setPrecio(detalle.getProducto().getPrecio());
+                    productoDetalleDTO.setCreateAt(detalle.getProducto().getCreateAt());
+                    productoDetalleDTO.setFoto(detalle.getProducto().getFoto());
+                    detalleDTO.setProducto(productoDetalleDTO);
+                }
+
+                return detalleDTO;
+            }).toList();
+
+            productoDTO.setItems(items);
+        }
 
         return productoDTO;
     }
@@ -152,7 +179,32 @@ public class ProductoServiceImp implements IProductoService {
         productoEntity.setCreateAt(productoDTO.getCreateAt());
         productoEntity.setFoto(productoDTO.getFoto());
 
+        // Mapear la lista de DetalleFacturaDTO a DetalleFacturaEntity
+        if (productoDTO.getItems() != null) {
+            List<DetalleFacturaEntity> items = productoDTO.getItems().stream().map(detalleDTO -> {
+                DetalleFacturaEntity detalleEntity = new DetalleFacturaEntity();
+                detalleEntity.setId(detalleDTO.getId());
+                detalleEntity.setCantidad(detalleDTO.getCantidad());
+
+                // Mapear producto en DetalleFacturaEntity
+                if (detalleDTO.getProducto() != null) {
+                    ProductoEntity productoDetalleEntity = new ProductoEntity();
+                    productoDetalleEntity.setId(detalleDTO.getProducto().getId());
+                    productoDetalleEntity.setNombre(detalleDTO.getProducto().getNombre());
+                    productoDetalleEntity.setPrecio(detalleDTO.getProducto().getPrecio());
+                    productoDetalleEntity.setCreateAt(detalleDTO.getProducto().getCreateAt());
+                    productoDetalleEntity.setFoto(detalleDTO.getProducto().getFoto());
+                    detalleEntity.setProducto(productoDetalleEntity);
+                }
+
+                return detalleEntity;
+            }).toList();
+
+            productoEntity.setItems(items);
+        }
+
         return productoEntity;
     }
+
 
 }

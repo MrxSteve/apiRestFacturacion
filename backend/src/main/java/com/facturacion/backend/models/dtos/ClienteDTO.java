@@ -3,6 +3,7 @@ package com.facturacion.backend.models.dtos;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class ClienteDTO {
@@ -12,4 +13,5 @@ public class ClienteDTO {
     private String email;
     private LocalDate createAt;
     private String foto;
+    private List<FacturaDTO> facturas;
 }

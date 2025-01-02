@@ -32,4 +32,10 @@ public class FacturaEntity {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     private List<DetalleFacturaEntity> items;
+
+    @PrePersist
+    public void prePersist() {
+        createAt = LocalDate.now();
+    }
+
 }
